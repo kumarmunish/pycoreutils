@@ -34,27 +34,42 @@ class FileOps:
             raise IsADirectoryError(f"'{filepath}' is a directory, not a file")
 
     @staticmethod
-    def head(filepath: Union[str, Path], lines: int = 10) -> str:
+    def head(
+        filepath: Union[str, Path] = None,
+        lines: int = 10,
+        content: str = None,
+    ) -> str:
         """
-        Return the first N lines of a file (like head command).
+        Return the first N lines of a file or content (like head command).
 
         Args:
-            filepath: Path to the file to read
+            filepath: Path to the file to read (mutually exclusive with content)
             lines: Number of lines to return (default: 10)
+            content: String content to process (mutually exclusive with filepath)
 
         Returns:
             String containing the first N lines
         """
-        try:
-            with open(filepath, "r", encoding="utf-8") as file:
-                result = []
-                for i, line in enumerate(file):
-                    if i >= lines:
-                        break
-                    result.append(line.rstrip("\n"))
-                return "\n".join(result)
-        except FileNotFoundError:
-            raise FileNotFoundError(f"File '{filepath}' not found")
+        if filepath is None and content is None:
+            raise ValueError("Either filepath or content must be provided")
+        if filepath is not None and content is not None:
+            raise ValueError("filepath and content are mutually exclusive")
+
+        # Get lines from either file or content
+        if filepath is not None:
+            try:
+                with open(filepath, "r", encoding="utf-8") as file:
+                    result = []
+                    for i, line in enumerate(file):
+                        if i >= lines:
+                            break
+                        result.append(line.rstrip("\n"))
+                    return "\n".join(result)
+            except FileNotFoundError:
+                raise FileNotFoundError(f"File '{filepath}' not found")
+        else:
+            content_lines = content.split('\n')[:lines]
+            return "\n".join(content_lines)
 
     @staticmethod
     def tail(filepath: Union[str, Path], lines: int = 10) -> str:

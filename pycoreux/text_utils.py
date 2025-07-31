@@ -28,17 +28,19 @@ class TextUtils:
     @staticmethod
     def grep(
         pattern: str,
-        filepath: Union[str, Path],
+        filepath: Union[str, Path] = None,
+        content: str = None,
         ignore_case: bool = False,
         line_numbers: bool = False,
         invert: bool = False,
     ) -> str:
         """
-        Search for pattern in file (like grep command).
+        Search for pattern in file or content (like grep command).
 
         Args:
             pattern: Regular expression pattern to search
-            filepath: Path to file to search in
+            filepath: Path to file to search in (mutually exclusive with content)
+            content: String content to search in (mutually exclusive with filepath)
             ignore_case: Case-insensitive search (default: False)
             line_numbers: Include line numbers in output (default: False)
             invert: Return non-matching lines (default: False)
@@ -46,25 +48,35 @@ class TextUtils:
         Returns:
             String containing matching lines (one per line)
         """
+        if filepath is None and content is None:
+            raise ValueError("Either filepath or content must be provided")
+        if filepath is not None and content is not None:
+            raise ValueError("filepath and content are mutually exclusive")
+
         flags = re.IGNORECASE if ignore_case else 0
         compiled_pattern = re.compile(pattern, flags)
 
-        try:
-            with open(filepath, "r", encoding="utf-8") as file:
-                results = []
-                for line_num, line in enumerate(file, 1):
-                    line = line.rstrip("\n")
-                    matches = bool(compiled_pattern.search(line))
+        # Get lines from either file or content
+        if filepath is not None:
+            try:
+                with open(filepath, "r", encoding="utf-8") as file:
+                    lines = [line.rstrip("\n") for line in file]
+            except FileNotFoundError:
+                raise FileNotFoundError(f"File '{filepath}' not found")
+        else:
+            lines = content.split('\n')
 
-                    if matches != invert:  # XOR logic for invert
-                        if line_numbers:
-                            results.append(f"{line_num}:{line}")
-                        else:
-                            results.append(line)
+        results = []
+        for line_num, line in enumerate(lines, 1):
+            matches = bool(compiled_pattern.search(line))
 
-                return "\n".join(results)
-        except FileNotFoundError:
-            raise FileNotFoundError(f"File '{filepath}' not found")
+            if matches != invert:  # XOR logic for invert
+                if line_numbers:
+                    results.append(f"{line_num}:{line}")
+                else:
+                    results.append(line)
+
+        return "\n".join(results)
 
     @staticmethod
     def nl(filepath: Union[str, Path], start: int = 1, skip_empty: bool = True) -> str:
@@ -227,3 +239,27 @@ class TextUtils:
             "chars": len(text),
             "bytes": len(text.encode("utf-8")),
         }
+
+    @staticmethod
+    def pipe(*functions):
+        """
+        Create a pipeline of functions for chaining operations.
+
+        Args:
+            *functions: Functions to chain together
+
+        Returns:
+            A function that applies all functions in sequence
+
+        Example:
+            pipeline = TextUtils.pipe(
+                lambda x: x.split('\n'),
+                lambda lines: [line for line in lines if "ERROR" in line],
+                lambda lines: sorted(lines),
+                lambda lines: '\n'.join(lines[:5])
+            )
+            result = pipeline(content)
+        """
+        from functools import reduce
+
+        return lambda x: reduce(lambda acc, f: f(acc), functions, x)

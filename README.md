@@ -1,5 +1,7 @@
 # pycoreux
 
+![pycoreux - Python Unix Core Utilities](pycoreux.png)
+
 [![Build Status](https://github.com/kumarmunish/pycoreutils/workflows/CI/badge.svg)](https://github.com/kumarmunish/pycoreutils/actions)
 [![PyPI version](https://img.shields.io/pypi/v/pycoreux.svg)](https://pypi.org/project/pycoreux/)
 [![Python versions](https://img.shields.io/pypi/pyversions/pycoreux.svg)](https://pypi.org/project/pycoreux/)
@@ -7,9 +9,9 @@
 [![Coverage](https://codecov.io/gh/kumarmunish/pycoreutils/branch/main/graph/badge.svg)](https://codecov.io/gh/kumarmunish/pycoreutils)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Downloads](https://img.shields.io/pypi/dm/pycoreux.svg)](https://pypi.org/project/pycoreux/)
+---
 
-A modern Python library that provides shell-like utilities for file operations, text processing, and subprocess management. Inspired by Unix coreutils, pycoreux offers a Pythonic API for building portable, scriptable command-line workflows with ease.
+**A modern Python library that provides shell-like utilities for file operations, text processing, and subprocess management. Inspired by Unix coreutils, pycoreux offers a Pythonic API for building portable, scriptable command-line workflows with ease.**
 
 ## Features
 
@@ -230,22 +232,65 @@ Output:
 
 ## Pipeline-Style Operations
 
-You can chain operations together for powerful data processing:
+You can chain operations together for powerful data processing, mimicking Unix shell pipelines:
 
 ```python
 from pycoreux import FileOps, TextUtils
 
-# Read file -> find errors -> count lines
-log_content = FileOps.cat("app.log")
-error_lines = TextUtils.grep("ERROR", "app.log")
-error_count = len(error_lines.split('\n')) if error_lines else 0
-print(f"Found {error_count} error lines")
+# Example 1: Simple chaining with content parameters
+# Shell equivalent: cat app.log | grep "ERROR" | head -5
+def get_first_errors(log_file):
+    content = FileOps.cat(log_file)
+    error_lines = TextUtils.grep("ERROR", content=content)
+    return FileOps.head(content=error_lines, lines=5)
 
-# Process multiple files
-import glob
-for log_file in glob.glob("*.log"):
-    lines, words, chars = FileOps.wc(log_file)
-    print(f"{log_file}: {lines} lines")
+# Usage
+first_errors = get_first_errors("app.log")
+print(first_errors)
+
+# Example 2: Method chaining style for fluent operations
+class Pipeline:
+    def __init__(self, data):
+        self.data = data
+    
+    def grep(self, pattern):
+        lines = [line for line in self.data.split('\n') if pattern in line]
+        return Pipeline('\n'.join(lines))
+    
+    def sort(self):
+        lines = self.data.split('\n')
+        sorted_data = TextUtils.sort(lines)
+        return Pipeline(sorted_data)
+    
+    def head(self, n=10):
+        lines = self.data.split('\n')[:n]
+        return Pipeline('\n'.join(lines))
+    
+    def get(self):
+        return self.data
+
+# Usage: cat app.log | grep ERROR | sort | head -5
+result = (Pipeline(FileOps.cat("app.log"))
+          .grep("ERROR")
+          .sort()
+          .head(5)
+          .get())
+
+print(result)
+
+# Example 3: Using built-in pipe function for functional composition
+# Shell equivalent: cat app.log | grep ERROR | sort | head -5
+error_pipeline = TextUtils.pipe(
+    lambda x: x.split('\n'),                           # split into lines
+    lambda lines: [l for l in lines if "ERROR" in l],  # grep ERROR
+    lambda lines: sorted(lines),                       # sort
+    lambda lines: lines[:5],                           # head -5
+    lambda lines: '\n'.join(lines)                     # join back
+)
+
+log_content = FileOps.cat("app.log")
+result = error_pipeline(log_content)
+print(result)
 ```
 
 ## CLI Usage
@@ -265,7 +310,7 @@ python -m pycoreux.scripts.pycoreux_cli wc myfile.txt
 ### FileOps
 
 - `cat(filepath)` - Read and return file contents
-- `head(filepath, lines=10)` - Return first N lines as string
+- `head(filepath=None, lines=10, content=None)` - Return first N lines as string (from file or content)
 - `tail(filepath, lines=10)` - Return last N lines as string
 - `ls(path=".", show_hidden=False, long_format=False)` - List directory contents
 - `wc(filepath)` - Count lines, words, and characters
@@ -276,13 +321,14 @@ python -m pycoreux.scripts.pycoreux_cli wc myfile.txt
 ### TextUtils
 
 - `echo(*args, sep=" ", end="\n")` - Join and return arguments as string
-- `grep(pattern, filepath, ignore_case=False, line_numbers=False, invert=False)` - Search for patterns
+- `grep(pattern, filepath=None, content=None, ignore_case=False, line_numbers=False, invert=False)` - Search for patterns (in file or content)
 - `nl(filepath, start=1, skip_empty=True)` - Add line numbers
 - `sort(lines, reverse=False, numeric=False)` - Sort lines
 - `uniq(lines, count=False)` - Remove duplicate consecutive lines
 - `cut(line, delimiter="\t", fields=1)` - Extract fields from line
 - `replace(text, pattern, replacement, count=0, ignore_case=False)` - Replace patterns in text
 - `wc(text)` - Count words, lines, characters in text
+- `pipe(*functions)` - Create a pipeline of functions for chaining operations
 
 ### ProcessUtils
 

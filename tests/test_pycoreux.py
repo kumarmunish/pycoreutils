@@ -90,6 +90,41 @@ class TestFileOps:
             files_hidden = output_hidden.split("\n")
             assert ".hidden" in files_hidden
 
+    def test_head_with_content(self):
+        """Test head functionality with content parameter."""
+        content = "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6"
+        output = FileOps.head(content=content, lines=3)
+        lines = output.split("\n")
+        assert len(lines) == 3
+        assert lines[0] == "Line 1"
+        assert lines[2] == "Line 3"
+
+    def test_pipeline_chaining(self):
+        """Test chaining operations using content parameters."""
+        content = "ERROR: something bad\nINFO: normal log\nERROR: another error\nWARN: warning"
+
+        # Chain: grep ERROR -> head 1
+        error_lines = TextUtils.grep("ERROR", content=content)
+        first_error = FileOps.head(content=error_lines, lines=1)
+
+        assert first_error == "ERROR: something bad"
+
+    def test_pipe_function(self):
+        """Test pipe function for chaining operations."""
+        content = "ERROR: bad thing\nINFO: good thing\nERROR: another bad thing\nWARN: warning"
+
+        # Create a pipeline: split -> filter errors -> sort -> take first 2 -> join
+        pipeline = TextUtils.pipe(
+            lambda x: x.split("\n"),
+            lambda lines: [line for line in lines if "ERROR" in line],
+            lambda lines: sorted(lines),
+            lambda lines: lines[:1],
+            lambda lines: "\n".join(lines),
+        )
+
+        result = pipeline(content)
+        assert result == "ERROR: another bad thing"
+
 
 class TestTextUtils:
     """Test TextUtils functionality."""
@@ -113,6 +148,15 @@ class TestTextUtils:
             assert "apricot" in lines
         finally:
             os.unlink(temp_path)
+
+    def test_grep_with_content(self):
+        """Test grep functionality with content parameter."""
+        content = "apple\nbanana\ncherry\napricot\norange"
+        output = TextUtils.grep("ap", content=content)
+        lines = output.split("\n")
+        assert len(lines) == 2
+        assert "apple" in lines
+        assert "apricot" in lines
 
     def test_nl(self):
         """Test line numbering functionality."""
