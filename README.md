@@ -1,12 +1,14 @@
 # pycoreux
 
-![pycoreux - Python Unix Core Utilities](pycoreux.png)
+<div align="center">
+  <img src="pycoreux.png" alt="pycoreux - Python Unix Core Utilities" />
+</div>
 
-[![Build Status](https://github.com/kumarmunish/pycoreutils/workflows/CI/badge.svg)](https://github.com/kumarmunish/pycoreutils/actions)
+[![Build Status](https://github.com/kumarmunish/pycoreux/workflows/CI/badge.svg)](https://github.com/kumarmunish/pycoreux/actions)
 [![PyPI version](https://img.shields.io/pypi/v/pycoreux.svg)](https://pypi.org/project/pycoreux/)
 [![Python versions](https://img.shields.io/pypi/pyversions/pycoreux.svg)](https://pypi.org/project/pycoreux/)
-[![Tests](https://img.shields.io/github/actions/workflow/status/kumarmunish/pycoreutils/ci.yml?label=tests&logo=pytest)](https://github.com/kumarmunish/pycoreutils/actions)
-[![Coverage](https://codecov.io/gh/kumarmunish/pycoreutils/branch/main/graph/badge.svg)](https://codecov.io/gh/kumarmunish/pycoreutils)
+[![Tests](https://img.shields.io/github/actions/workflow/status/kumarmunish/pycoreux/ci.yml?label=tests&logo=pytest)](https://github.com/kumarmunish/pycoreux/actions)
+[![Coverage](https://codecov.io/gh/kumarmunish/pycoreux/branch/main/graph/badge.svg)](https://codecov.io/gh/kumarmunish/pycoreux)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ---
@@ -16,7 +18,7 @@
 ## Features
 
 - **File Operations**: Read, write, and manipulate files with ease
-- **Text Processing**: Count lines/words, search patterns, head/tail operations  
+- **Text Processing**: Count lines/words, search patterns, head/tail operations
 - **Process Management**: Execute subprocesses with simple APIs
 - **String Utilities**: Pattern matching, text manipulation
 - **Path Operations**: Directory listing, file system navigation
@@ -124,7 +126,7 @@ sorted_output = TextUtils.sort(lines)
 print(sorted_output)
 # Output:
 # apple
-# banana  
+# banana
 # cherry
 # zebra
 ```
@@ -193,39 +195,38 @@ Here's the equivalent using pycoreux:
 
 ```python
 from pycoreux import FileOps, TextUtils
-from collections import Counter
 
+# Direct pipeline style - each step mirrors the Unix command
 def analyze_access_log(log_file):
-    # Read the log file
-    content = FileOps.cat(log_file)
-    
-    # Extract IP addresses (first column)
-    ips = []
-    for line in content.split('\n'):
-        if line.strip():
-            ip = TextUtils.cut(line, delimiter=' ', fields=1)
-            if ip:
-                ips.append(ip)
-    
-    # Count occurrences
-    ip_counts = Counter(ips)
-    
-    # Get top 10
-    top_10 = ip_counts.most_common(10)
-    
-    # Format output similar to uniq -c
-    for count, ip in top_10:
-        print(f"{count:>8} {ip}")
+    content = FileOps.cat(log_file)                                    # cat access.log
+    ips = [TextUtils.cut(line, ' ', 1) for line in content.split('\n') if line.strip()]  # cut -d' ' -f 1
+    sorted_ips = TextUtils.sort(ips)                                   # sort
+    unique_counts = TextUtils.uniq(sorted_ips.split('\n'), count=True) # uniq -c
+    reverse_sorted = TextUtils.sort(unique_counts.split('\n'), reverse=True, numeric=True)  # sort -rn
+    return FileOps.head(content=reverse_sorted, lines=10)             # head -10
 
 # Usage
-analyze_access_log("access.log")
+print(analyze_access_log("access.log"))
+
+# Or using the TextUtils.pipe function for functional composition:
+from functools import partial
+
+pipeline = TextUtils.pipe(
+    FileOps.cat,
+    lambda content: [TextUtils.cut(line, ' ', 1) for line in content.split('\n') if line.strip()],
+    TextUtils.sort,
+    lambda ips: TextUtils.uniq(ips.split('\n'), count=True),
+    lambda counts: TextUtils.sort(counts.split('\n'), reverse=True, numeric=True),
+    lambda sorted_counts: FileOps.head(content=sorted_counts, lines=10)
+)
+result = pipeline("access.log")
 ```
 
 Output:
 
 ```text
       16 176.182.2.191
-       7 212.205.21.11  
+       7 212.205.21.11
        1 190.253.121.1
        1 90.53.111.17
 ```

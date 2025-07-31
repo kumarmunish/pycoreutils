@@ -155,9 +155,9 @@ class PathUtils:
         """Format byte size in human readable format."""
         for unit in ["B", "K", "M", "G", "T"]:
             if size_bytes < 1024.0:
-                return f"{size_bytes:.1f}{unit}"
+                return f"{size_bytes: .1f}{unit}"
             size_bytes /= 1024.0
-        return f"{size_bytes:.1f}P"
+        return f"{size_bytes: .1f}P"
 
     @staticmethod
     def chmod(path: Union[str, Path], mode: Union[str, int]) -> None:

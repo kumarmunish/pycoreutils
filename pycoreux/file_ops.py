@@ -68,7 +68,7 @@ class FileOps:
             except FileNotFoundError:
                 raise FileNotFoundError(f"File '{filepath}' not found")
         else:
-            content_lines = content.split('\n')[:lines]
+            content_lines = content.split("\n")[:lines]
             return "\n".join(content_lines)
 
     @staticmethod
@@ -120,7 +120,7 @@ class FileOps:
                     stat = item_path.stat()
                     is_dir = item_path.is_dir()
                     size = stat.st_size
-                    result.append(f"{'d' if is_dir else '-'} {size:>8} {item}")
+                    result.append(f"{'d' if is_dir else '-'} {size: >8} {item}")
                 return "\n".join(result)
             else:
                 return "\n".join(sorted(items))

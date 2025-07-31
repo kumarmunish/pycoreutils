@@ -64,7 +64,7 @@ class TextUtils:
             except FileNotFoundError:
                 raise FileNotFoundError(f"File '{filepath}' not found")
         else:
-            lines = content.split('\n')
+            lines = content.split("\n")
 
         results = []
         for line_num, line in enumerate(lines, 1):
@@ -72,7 +72,7 @@ class TextUtils:
 
             if matches != invert:  # XOR logic for invert
                 if line_numbers:
-                    results.append(f"{line_num}:{line}")
+                    results.append(f"{line_num}: {line}")
                 else:
                     results.append(line)
 
@@ -124,9 +124,27 @@ class TextUtils:
         """
         if numeric:
             try:
-                sorted_lines = sorted(
-                    lines, key=lambda x: float(x.strip()), reverse=reverse
-                )
+
+                def numeric_key(line):
+                    # Handle uniq -c format (leading whitespace + number + text)
+                    stripped = line.strip()
+                    if not stripped:
+                        return 0.0
+
+                    # Check if line starts with a number (possibly after whitespace)
+                    parts = stripped.split(
+                        None, 1
+                    )  # Split on any whitespace, max 1 split
+                    if parts:
+                        try:
+                            return float(parts[0])
+                        except ValueError:
+                            # If first part isn't a number, try to parse the
+                            # whole line as a number
+                            return float(stripped)
+                    return 0.0
+
+                sorted_lines = sorted(lines, key=numeric_key, reverse=reverse)
                 return "\n".join(sorted_lines)
             except ValueError:
                 # Fall back to string sorting if numeric fails
@@ -159,7 +177,7 @@ class TextUtils:
                 current_count += 1
             else:
                 if count:
-                    result.append(f"{current_count:>7} {current_line}")
+                    result.append(f"{current_count: >7} {current_line}")
                 else:
                     result.append(current_line)
                 current_line = line
@@ -167,7 +185,7 @@ class TextUtils:
 
         # Add the last line
         if count:
-            result.append(f"{current_count:>7} {current_line}")
+            result.append(f"{current_count: >7} {current_line}")
         else:
             result.append(current_line)
 

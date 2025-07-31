@@ -199,6 +199,23 @@ class TestTextUtils:
         assert "      3 banana" in count_lines
         assert "      1 cherry" in count_lines
 
+    def test_sort_numeric_with_count_format(self):
+        """Test numeric sorting with uniq -c format."""
+        lines = ["      2 10.0.0.1", "      3 192.168.1.1", "      1 8.8.8.8"]
+        output = TextUtils.sort(lines, reverse=True, numeric=True)
+        sorted_lines = output.split("\n")
+        assert sorted_lines == [
+            "      3 192.168.1.1",
+            "      2 10.0.0.1",
+            "      1 8.8.8.8",
+        ]
+
+        # Test regular numeric sort
+        numeric_lines = ["10", "2", "1"]
+        numeric_output = TextUtils.sort(numeric_lines, numeric=True)
+        numeric_sorted = numeric_output.split("\n")
+        assert numeric_sorted == ["1", "2", "10"]
+
 
 class TestProcessUtils:
     """Test ProcessUtils functionality."""
