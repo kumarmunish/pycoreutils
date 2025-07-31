@@ -1,0 +1,51 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+          body: |
+            ## Changes in this Release
+
+            Please see the [CHANGELOG.md](CHANGELOG.md) for details.
+
+            ## Installation
+
+            ```bash
+            pip install pycoreutils==${{ github.ref_name }}
+            ```
+
+            ## Quick Start
+
+            ```python
+            from pycoreutils import FileOps, TextUtils, ProcessUtils
+
+            # Read files
+            content = FileOps.cat("myfile.txt")
+            lines = FileOps.head("myfile.txt", 10)
+
+            # Process text
+            matches = TextUtils.grep("pattern", "myfile.txt")
+
+            # Execute commands
+            result = ProcessUtils.run("ls -la")
+            ```

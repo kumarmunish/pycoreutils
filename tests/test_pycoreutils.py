@@ -1,10 +1,12 @@
 """Tests for pycoreutils package."""
 
-import pytest
-import tempfile
 import os
+import tempfile
 from pathlib import Path
-from pycoreutils import FileOps, TextUtils, ProcessUtils
+
+import pytest
+
+from pycoreutils import FileOps, ProcessUtils, TextUtils
 
 
 class TestFileOps:
@@ -12,7 +14,7 @@ class TestFileOps:
 
     def test_cat(self):
         """Test cat functionality."""
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
             f.write("Hello, World!\nSecond line")
             temp_path = f.name
 
@@ -24,7 +26,7 @@ class TestFileOps:
 
     def test_head(self):
         """Test head functionality."""
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
             for i in range(20):
                 f.write(f"Line {i+1}\n")
             temp_path = f.name
@@ -39,7 +41,7 @@ class TestFileOps:
 
     def test_tail(self):
         """Test tail functionality."""
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
             for i in range(20):
                 f.write(f"Line {i+1}\n")
             temp_path = f.name
@@ -54,14 +56,14 @@ class TestFileOps:
 
     def test_wc(self):
         """Test word count functionality."""
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
             f.write("Hello world\nSecond line\n")
             temp_path = f.name
 
         try:
             lines, words, chars = FileOps.wc(temp_path)
             assert lines == 2
-            assert words == 3  # "Hello", "world", "Second", "line"
+            assert words == 4  # "Hello", "world", "Second", "line"
             assert chars == 24  # Including newlines
         finally:
             os.unlink(temp_path)
@@ -77,7 +79,7 @@ class TestTextUtils:
 
     def test_grep(self):
         """Test grep functionality."""
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
             f.write("apple\nbanana\ncherry\napricot\n")
             temp_path = f.name
 
@@ -91,7 +93,7 @@ class TestTextUtils:
 
     def test_nl(self):
         """Test line numbering functionality."""
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
             f.write("first line\n\nsecond line\n")
             temp_path = f.name
 
