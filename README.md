@@ -1,5 +1,11 @@
 # Pycoreutils
 
+[![CI](https://github.com/kumarmunish/pycoreutils/actions/workflows/ci.yml/badge.svg)](https://github.com/kumarmunish/pycoreutils/actions/workflows/ci.yml)
+[![PyPI version](https://badge.fury.io/py/pycoreutils.svg)](https://badge.fury.io/py/pycoreutils)
+[![Python versions](https://img.shields.io/pypi/pyversions/pycoreutils.svg)](https://pypi.org/project/pycoreutils/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 A modern Python library that provides shell-like utilities for file operations, text processing, and subprocess management. Inspired by Unix coreutils, this library offers a Pythonic API for common shell scripting tasks.
 
 ## Features
@@ -66,12 +72,43 @@ cd pycoreutils
 # Install in development mode
 pip install -e ".[dev]"
 
+# Set up pre-commit hooks (optional)
+pre-commit install
+
 # Run tests
 pytest
 
 # Format code
 black .
 isort .
+
+# Type checking
+mypy pycoreutils
+
+# Run all checks (like CI)
+black --check .
+isort --check-only .
+flake8 pycoreutils
+mypy pycoreutils
+pytest
+```
+
+## Publishing to PyPI
+
+This package is automatically published to PyPI using GitHub Actions. See [PUBLISHING.md](./PUBLISHING.md) for detailed instructions.
+
+### Quick Publishing Steps:
+
+1. **Test Release**: Use GitHub Actions workflow with TestPyPI
+2. **Production Release**: Create a new GitHub release with a version tag (e.g., `v0.1.0`)
+
+### Manual Publishing:
+```bash
+# Build and publish
+pip install build twine
+python -m build
+python -m twine upload --repository testpypi dist/*  # Test first
+python -m twine upload dist/*  # Production
 ```
 
 ## License
