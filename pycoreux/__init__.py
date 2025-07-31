@@ -1,5 +1,5 @@
 """
-Pycoreutils - A Python library for shell-like utilities.
+pycoreux - A Python library for shell-like utilities.
 
 This package provides Pythonic interfaces to common shell operations
 like file processing, text manipulation, and subprocess management.
@@ -13,7 +13,7 @@ from .text_utils import TextUtils
 
 __version__ = "0.1.0"
 __author__ = "Munish Kumar"
-__email__ = "your-email@example.com"
+__email__ = "munishkumar631@gmail.com"
 
 __all__ = [
     "FileOps",

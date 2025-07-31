@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Log analysis example using pycoreutils.
+Log analysis example using pycoreux.
 Demonstrates parsing and analyzing log files.
 """
 
 import re
 from collections import Counter
 
-from pycoreutils import FileOps, ProcessUtils, TextUtils
+from pycoreux import FileOps, ProcessUtils, TextUtils
 
 
 def analyze_log_file(log_path):

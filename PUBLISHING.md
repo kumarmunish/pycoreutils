@@ -1,6 +1,6 @@
-# PyPI Publishing Guide for Pycoreutils
+# PyPI Publishing Guide for pycoreux
 
-This guide explains how to publish pycoreutils to PyPI using GitHub Actions and manual methods.
+This guide explains how to publish pycoreux to PyPI using GitHub Actions and manual methods.
 
 ## Prerequisites
 
@@ -69,7 +69,7 @@ python -m build
 python -m twine upload --repository testpypi dist/*
 
 # Test installation
-pip install --index-url https://test.pypi.org/simple/ pycoreutils
+pip install --index-url https://test.pypi.org/simple/ pycoreux
 ```
 
 ### Publish to PyPI
@@ -98,16 +98,16 @@ git tag v0.2.0rc1 # Release candidate
 ## Verification
 
 ### Check Package on PyPI
-- Visit: https://pypi.org/project/pycoreutils/
+- Visit: https://pypi.org/project/pycoreux/
 - Verify metadata, description, and links
 
 ### Test Installation
 ```bash
 # Install from PyPI
-pip install pycoreutils
+pip install pycoreux
 
 # Test basic functionality
-python -c "from pycoreutils import FileOps; print('✅ Import successful')"
+python -c "from pycoreux import FileOps; print('✅ Import successful')"
 ```
 
 ## Troubleshooting
@@ -166,5 +166,5 @@ Add this to your workflow:
 - [ ] Test on TestPyPI first
 - [ ] Create GitHub release
 - [ ] Verify on PyPI
-- [ ] Test installation: `pip install pycoreutils`
+- [ ] Test installation: `pip install pycoreux`
 - [ ] Update documentation if needed

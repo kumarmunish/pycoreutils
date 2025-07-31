@@ -3,8 +3,8 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pycoreutils"
-version = "0.1.1"
+name = "pycoreux"
+version = "0.1.0"
 authors = [
     {name = "Munish Kumar", email = "munishkumar631@gmail.com"},
 ]
@@ -32,9 +32,9 @@ classifiers = [
 keywords = ["shell", "utilities", "coreutils", "file-processing", "text-processing"]
 
 [project.urls]
-Homepage = "https://github.com/kumarmunish/pycoreutils"
-Repository = "https://github.com/kumarmunish/pycoreutils"
-Issues = "https://github.com/kumarmunish/pycoreutils/issues"
+Homepage = "https://github.com/kumarmunish/pycoreux"
+Repository = "https://github.com/kumarmunish/pycoreux"
+Issues = "https://github.com/kumarmunish/pycoreux/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -54,7 +54,7 @@ enhanced = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["pycoreutils*"]
+include = ["pycoreux*"]
 
 [tool.black]
 line-length = 88
@@ -103,7 +103,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = ["pycoreutils"]
+source = ["pycoreux"]
 omit = [
     "*/tests/*",
     "*/test_*",

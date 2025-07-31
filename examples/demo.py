@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
-Example usage of pycoreutils library.
+Example usage of pycoreux library.
 Demonstrates common shell-like operations in Python.
 """
 
-from pycoreutils import FileOps, ProcessUtils, TextUtils
+from pycoreux import FileOps, ProcessUtils, TextUtils
 
 
 def main():
-    """Demonstrate pycoreutils functionality."""
+    """Demonstrate pycoreux functionality."""
 
-    print("=== Pycoreutils Demo ===\n")
+    print("=== pycoreux Demo ===\n")
 
     # Create a sample file for demonstration
     sample_content = """apple

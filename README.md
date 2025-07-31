@@ -1,12 +1,12 @@
-# Pycoreutils
+# pycoreux
 
-[![CI](https://github.com/kumarmunish/pycoreutils/actions/workflows/ci.yml/badge.svg)](https://github.com/kumarmunish/pycoreutils/actions/workflows/ci.yml)
-[![PyPI version](https://badge.fury.io/py/pycoreutils.svg)](https://badge.fury.io/py/pycoreutils)
-[![Python versions](https://img.shields.io/pypi/pyversions/pycoreutils.svg)](https://pypi.org/project/pycoreutils/)
+[![CI](https://github.com/kumarmunish/pycoreux/actions/workflows/ci.yml/badge.svg)](https://github.com/kumarmunish/pycoreux/actions/workflows/ci.yml)
+[![PyPI version](https://badge.fury.io/py/pycoreux.svg)](https://badge.fury.io/py/pycoreux)
+[![Python versions](https://img.shields.io/pypi/pyversions/pycoreux.svg)](https://pypi.org/project/pycoreux/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-A modern Python library that provides shell-like utilities for file operations, text processing, and subprocess management. Inspired by Unix coreutils, this library offers a Pythonic API for common shell scripting tasks.
+A modern Python library that provides shell-like utilities for file operations, text processing, and subprocess management. Inspired by Unix coreutils, pycoreux offers a Pythonic API for building portable, scriptable command-line workflows with ease.
 
 ## Features
 
@@ -20,13 +20,13 @@ A modern Python library that provides shell-like utilities for file operations, 
 ## Installation
 
 ```bash
-pip install pycoreutils
+pip install pycoreux
 ```
 
 ## Quick Start
 
 ```python
-from pycoreutils import FileOps, TextUtils, ProcessUtils
+from pycoreux import FileOps, TextUtils, ProcessUtils
 
 # Read and process files
 content = FileOps.cat("myfile.txt")
@@ -66,8 +66,8 @@ numbered_lines = TextUtils.nl("myfile.txt")
 
 ```bash
 # Clone the repository
-git clone https://github.com/kumarmunish/pycoreutils.git
-cd pycoreutils
+git clone https://github.com/kumarmunish/pycoreux.git
+cd pycoreux
 
 # Install in development mode
 pip install -e ".[dev]"
@@ -83,13 +83,13 @@ black .
 isort .
 
 # Type checking
-mypy pycoreutils
+mypy pycoreux
 
 # Run all checks (like CI)
 black --check .
 isort --check-only .
-flake8 pycoreutils
-mypy pycoreutils
+flake8 pycoreux
+mypy pycoreux
 pytest
 ```
 

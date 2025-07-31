@@ -31,13 +31,13 @@ jobs:
             ## Installation
 
             ```bash
-            pip install pycoreutils==${{ github.ref_name }}
+            pip install pycoreux==${{ github.ref_name }}
             ```
 
             ## Quick Start
 
             ```python
-            from pycoreutils import FileOps, TextUtils, ProcessUtils
+            from pycoreux import FileOps, TextUtils, ProcessUtils
 
             # Read files
             content = FileOps.cat("myfile.txt")

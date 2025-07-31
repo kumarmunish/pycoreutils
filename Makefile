@@ -1,4 +1,4 @@
-# Makefile for pycoreutils development
+# Makefile for pycoreux development
 
 .PHONY: help install install-dev test format lint clean build upload demo
 
@@ -29,7 +29,7 @@ format:
 	isort .
 
 lint:
-	mypy pycoreutils/
+	mypy pycoreux/
 
 clean:
 	rm -rf build/

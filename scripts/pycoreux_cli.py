@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Command-line interface for pycoreutils.
+Command-line interface for pycoreux.
 Provides CLI wrappers for the library functions.
 """
 
@@ -8,10 +8,10 @@ import argparse
 import sys
 from pathlib import Path
 
-# Add the parent directory to sys.path to import pycoreutils
+# Add the parent directory to sys.path to import pycoreux
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from pycoreutils import FileOps, ProcessUtils, TextUtils
+from pycoreux import FileOps, ProcessUtils, TextUtils
 
 
 def cmd_cat():
@@ -177,7 +177,7 @@ def cmd_grep():
 def main():
     """Main CLI entry point."""
     if len(sys.argv) < 2:
-        print("Usage: pycoreutils <command> [args...]")
+        print("Usage: pycoreux <command> [args...]")
         print("Commands: cat, head, tail, wc, ls, echo, grep")
         sys.exit(1)
 

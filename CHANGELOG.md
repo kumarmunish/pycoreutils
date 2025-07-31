@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Initial release of pycoreutils
+- Initial release of pycoreux
 - FileOps module with file operations (cat, head, tail, wc, ls, etc.)
 - TextUtils module with text processing utilities (grep, sort, nl, etc.)
 - ProcessUtils module for subprocess management (run, pipe, capture, etc.)
@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2025-07-31
 
 ### Added
-- Initial release of pycoreutils package
+- Initial release of pycoreux package
 - Core functionality for shell-like operations in Python
 - Support for Python 3.7+
 - MIT License

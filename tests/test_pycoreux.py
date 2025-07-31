@@ -1,4 +1,4 @@
-"""Tests for pycoreutils package."""
+"""Tests for pycoreux package."""
 
 import os
 import tempfile
@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from pycoreutils import FileOps, ProcessUtils, TextUtils
+from pycoreux import FileOps, ProcessUtils, TextUtils
 
 
 class TestFileOps:
