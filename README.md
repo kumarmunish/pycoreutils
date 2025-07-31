@@ -394,4 +394,9 @@ MIT License – see [LICENSE](./LICENSE) file for details.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Have a shell utility you wish you could use from Python?
+Spotted a gap in the toolkit or have an idea for a new feature?
+
+Contributions are welcome! Feel free to open an issue or submit a Pull Request — whether it’s for a new utility, improvement, or bug fix. 
+
+Let's make pycoreux even more powerful together.
