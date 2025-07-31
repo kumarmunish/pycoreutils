@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "pycoreutils"
 version = "0.1.1"
 authors = [
-    {name = "Munish Kumar", email = "your-email@example.com"},
+    {name = "Munish Kumar", email = "munishkumar631@gmail.com"},
 ]
 description = "A Python library providing shell-like utilities for file operations, text processing, and subprocess management"
 readme = "README.md"
