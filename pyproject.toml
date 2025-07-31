@@ -1,0 +1,74 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pycoreutils"
+version = "0.1.0"
+authors = [
+    {name = "Munish Kumar", email = "your-email@example.com"},
+]
+description = "A Python library providing shell-like utilities for file operations, text processing, and subprocess management"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.7"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Shells",
+    "Topic :: Text Processing",
+    "Topic :: Utilities",
+]
+keywords = ["shell", "utilities", "coreutils", "file-processing", "text-processing"]
+
+[project.urls]
+Homepage = "https://github.com/kumarmunish/pycoreutils"
+Repository = "https://github.com/kumarmunish/pycoreutils"
+Issues = "https://github.com/kumarmunish/pycoreutils/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "black>=23.0",
+    "isort>=5.0",
+    "mypy>=1.0",
+    "pre-commit>=3.0",
+]
+enhanced = [
+    "psutil>=5.0",  # For enhanced process monitoring
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pycoreutils*"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
