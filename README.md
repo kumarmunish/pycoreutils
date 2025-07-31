@@ -237,60 +237,26 @@ You can chain operations together for powerful data processing, mimicking Unix s
 ```python
 from pycoreux import FileOps, TextUtils
 
-# Example 1: Simple chaining with content parameters
+# Example 1: Simple one-liner chaining
 # Shell equivalent: cat app.log | grep "ERROR" | head -5
-def get_first_errors(log_file):
-    content = FileOps.cat(log_file)
-    error_lines = TextUtils.grep("ERROR", content=content)
-    return FileOps.head(content=error_lines, lines=5)
-
-# Usage
-first_errors = get_first_errors("app.log")
+first_errors = FileOps.head(content=TextUtils.grep("ERROR", content=FileOps.cat("app.log")), lines=5)
 print(first_errors)
 
-# Example 2: Method chaining style for fluent operations
-class Pipeline:
-    def __init__(self, data):
-        self.data = data
-    
-    def grep(self, pattern):
-        lines = [line for line in self.data.split('\n') if pattern in line]
-        return Pipeline('\n'.join(lines))
-    
-    def sort(self):
-        lines = self.data.split('\n')
-        sorted_data = TextUtils.sort(lines)
-        return Pipeline(sorted_data)
-    
-    def head(self, n=10):
-        lines = self.data.split('\n')[:n]
-        return Pipeline('\n'.join(lines))
-    
-    def get(self):
-        return self.data
+# Example 2: Multi-step chaining (easier to read)
+# Shell equivalent: cat app.log | grep "ERROR" | sort | head -3
+content = FileOps.cat("app.log")                           # cat app.log
+errors = TextUtils.grep("ERROR", content=content)          # | grep "ERROR"
+sorted_errors = TextUtils.sort(errors.split('\n'))         # | sort
+top_errors = FileOps.head(content=sorted_errors, lines=3)  # | head -3
+print(top_errors)
 
-# Usage: cat app.log | grep ERROR | sort | head -5
-result = (Pipeline(FileOps.cat("app.log"))
-          .grep("ERROR")
-          .sort()
-          .head(5)
-          .get())
-
-print(result)
-
-# Example 3: Using built-in pipe function for functional composition
-# Shell equivalent: cat app.log | grep ERROR | sort | head -5
-error_pipeline = TextUtils.pipe(
-    lambda x: x.split('\n'),                           # split into lines
-    lambda lines: [l for l in lines if "ERROR" in l],  # grep ERROR
-    lambda lines: sorted(lines),                       # sort
-    lambda lines: lines[:5],                           # head -5
-    lambda lines: '\n'.join(lines)                     # join back
-)
-
-log_content = FileOps.cat("app.log")
-result = error_pipeline(log_content)
-print(result)
+# Example 3: Processing multiple files
+# Shell equivalent: cat *.log | grep "WARN" | head -10
+import glob
+all_logs = '\n'.join([FileOps.cat(f) for f in glob.glob("*.log")])  # cat *.log
+warnings = TextUtils.grep("WARN", content=all_logs)                 # | grep "WARN"
+first_warnings = FileOps.head(content=warnings, lines=10)           # | head -10
+print(first_warnings)
 ```
 
 ## CLI Usage
