@@ -7,7 +7,7 @@ import os
 import shutil
 import stat
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 
 class PathUtils:
@@ -19,7 +19,7 @@ class PathUtils:
         name: Optional[str] = None,
         type_filter: Optional[str] = None,
         max_depth: Optional[int] = None,
-    ) -> List[str]:
+    ) -> str:
         """
         Find files and directories (like find command).
 
@@ -30,43 +30,64 @@ class PathUtils:
             max_depth: Maximum search depth
 
         Returns:
-            List of matching paths
+            String containing matching paths (one per line)
         """
-        results = []
-        start_path = Path(path)
+        finder = PathUtils._FileFinder(name, type_filter, max_depth)
+        return finder.search(Path(path))
 
-        def _search(current_path: Path, depth: int = 0):
-            if max_depth is not None and depth > max_depth:
+    class _FileFinder:
+        """Helper class to handle file finding logic."""
+
+        def __init__(
+            self,
+            name: Optional[str],
+            type_filter: Optional[str],
+            max_depth: Optional[int],
+        ):
+            self.name = name
+            self.type_filter = type_filter
+            self.max_depth = max_depth
+            self.results = []
+
+        def search(self, start_path: Path) -> str:
+            """Search for files and return results."""
+            self._search_recursive(start_path, 0)
+            return "\n".join(sorted(self.results))
+
+        def _search_recursive(self, current_path: Path, depth: int):
+            """Recursively search directories."""
+            if self.max_depth is not None and depth > self.max_depth:
                 return
 
             try:
                 for item in current_path.iterdir():
-                    # Check type filter
-                    if type_filter == "f" and not item.is_file():
-                        continue
-                    elif type_filter == "d" and not item.is_dir():
-                        continue
+                    if self._item_matches(item):
+                        self.results.append(str(item))
 
-                    # Check name pattern
-                    if name and not fnmatch.fnmatch(item.name, name):
-                        if item.is_dir():
-                            _search(item, depth + 1)
-                        continue
-
-                    results.append(str(item))
-
-                    # Recurse into directories
                     if item.is_dir():
-                        _search(item, depth + 1)
+                        self._search_recursive(item, depth + 1)
 
             except PermissionError:
                 pass  # Skip directories we can't read
 
-        _search(start_path)
-        return sorted(results)
+        def _item_matches(self, item: Path) -> bool:
+            """Check if an item matches all filters."""
+            return self._matches_type_filter(item) and self._matches_name_pattern(item)
+
+        def _matches_type_filter(self, item: Path) -> bool:
+            """Check if item matches the type filter."""
+            if self.type_filter == "f":
+                return item.is_file()
+            elif self.type_filter == "d":
+                return item.is_dir()
+            return True
+
+        def _matches_name_pattern(self, item: Path) -> bool:
+            """Check if item matches the name pattern."""
+            return self.name is None or fnmatch.fnmatch(item.name, self.name)
 
     @staticmethod
-    def which_all(program: str) -> List[str]:
+    def which_all(program: str) -> str:
         """
         Find all instances of a program in PATH.
 
@@ -74,7 +95,7 @@ class PathUtils:
             program: Program name to find
 
         Returns:
-            List of full paths to the program
+            String containing full paths to the program (one per line)
         """
         paths = []
         for path_dir in os.environ.get("PATH", "").split(os.pathsep):
@@ -85,7 +106,7 @@ class PathUtils:
             if program_path.is_file() and os.access(program_path, os.X_OK):
                 paths.append(str(program_path))
 
-        return paths
+        return "\n".join(paths)
 
     @staticmethod
     def du(path: Union[str, Path], human_readable: bool = False) -> dict:

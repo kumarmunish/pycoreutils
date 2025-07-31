@@ -32,7 +32,8 @@ class TestFileOps:
             temp_path = f.name
 
         try:
-            lines = FileOps.head(temp_path, 5)
+            output = FileOps.head(temp_path, 5)
+            lines = output.split("\n")
             assert len(lines) == 5
             assert lines[0] == "Line 1"
             assert lines[4] == "Line 5"
@@ -47,7 +48,8 @@ class TestFileOps:
             temp_path = f.name
 
         try:
-            lines = FileOps.tail(temp_path, 5)
+            output = FileOps.tail(temp_path, 5)
+            lines = output.split("\n")
             assert len(lines) == 5
             assert lines[0] == "Line 16"
             assert lines[4] == "Line 20"
@@ -68,6 +70,26 @@ class TestFileOps:
         finally:
             os.unlink(temp_path)
 
+    def test_ls(self):
+        """Test ls functionality."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Create some test files
+            (Path(temp_dir) / "file1.txt").touch()
+            (Path(temp_dir) / "file2.txt").touch()
+            (Path(temp_dir) / ".hidden").touch()
+
+            # Test basic ls
+            output = FileOps.ls(temp_dir)
+            files = output.split("\n")
+            assert "file1.txt" in files
+            assert "file2.txt" in files
+            assert ".hidden" not in files
+
+            # Test ls with hidden files
+            output_hidden = FileOps.ls(temp_dir, show_hidden=True)
+            files_hidden = output_hidden.split("\n")
+            assert ".hidden" in files_hidden
+
 
 class TestTextUtils:
     """Test TextUtils functionality."""
@@ -84,10 +106,11 @@ class TestTextUtils:
             temp_path = f.name
 
         try:
-            matches = TextUtils.grep("ap", temp_path)
-            assert len(matches) == 2
-            assert "apple" in matches
-            assert "apricot" in matches
+            output = TextUtils.grep("ap", temp_path)
+            lines = output.split("\n")
+            assert len(lines) == 2
+            assert "apple" in lines
+            assert "apricot" in lines
         finally:
             os.unlink(temp_path)
 
@@ -98,22 +121,39 @@ class TestTextUtils:
             temp_path = f.name
 
         try:
-            numbered = TextUtils.nl(temp_path)
-            assert len(numbered) == 3
-            assert numbered[0] == "\t1 first line"
-            assert numbered[1] == ""  # Empty line not numbered
-            assert numbered[2] == "\t2 second line"
+            output = TextUtils.nl(temp_path)
+            lines = output.split("\n")
+            assert len(lines) == 3
+            assert lines[0] == "\t1 first line"
+            assert lines[1] == ""  # Empty line not numbered
+            assert lines[2] == "\t2 second line"
         finally:
             os.unlink(temp_path)
 
     def test_sort_lines(self):
         """Test line sorting functionality."""
         lines = ["zebra", "apple", "banana"]
-        sorted_lines = TextUtils.sort_lines(lines)
+        output = TextUtils.sort(lines)
+        sorted_lines = output.split("\n")
         assert sorted_lines == ["apple", "banana", "zebra"]
 
-        reverse_sorted = TextUtils.sort_lines(lines, reverse=True)
-        assert reverse_sorted == ["zebra", "banana", "apple"]
+        reverse_output = TextUtils.sort(lines, reverse=True)
+        reverse_sorted_lines = reverse_output.split("\n")
+        assert reverse_sorted_lines == ["zebra", "banana", "apple"]
+
+    def test_uniq(self):
+        """Test uniq functionality."""
+        lines = ["apple", "apple", "banana", "banana", "banana", "cherry"]
+        output = TextUtils.uniq(lines)
+        result_lines = output.split("\n")
+        assert result_lines == ["apple", "banana", "cherry"]
+
+        # Test with count
+        output_count = TextUtils.uniq(lines, count=True)
+        count_lines = output_count.split("\n")
+        assert "      2 apple" in count_lines
+        assert "      3 banana" in count_lines
+        assert "      1 cherry" in count_lines
 
 
 class TestProcessUtils:

@@ -39,9 +39,8 @@ def cmd_head():
     args = parser.parse_args(sys.argv[2:])
 
     try:
-        lines = FileOps.head(args.file, args.lines)
-        for line in lines:
-            print(line)
+        output = FileOps.head(args.file, args.lines)
+        print(output)
     except Exception as e:
         print(f"head: {e}", file=sys.stderr)
         sys.exit(1)
@@ -57,9 +56,8 @@ def cmd_tail():
     args = parser.parse_args(sys.argv[2:])
 
     try:
-        lines = FileOps.tail(args.file, args.lines)
-        for line in lines:
-            print(line)
+        output = FileOps.tail(args.file, args.lines)
+        print(output)
     except Exception as e:
         print(f"tail: {e}", file=sys.stderr)
         sys.exit(1)
@@ -114,9 +112,8 @@ def cmd_ls():
 
     for path in args.paths:
         try:
-            items = FileOps.ls(path, show_hidden=args.all, long_format=args.long)
-            for item in items:
-                print(item)
+            output = FileOps.ls(path, show_hidden=args.all, long_format=args.long)
+            print(output)
         except Exception as e:
             print(f"ls: {e}", file=sys.stderr)
             sys.exit(1)
@@ -157,18 +154,19 @@ def cmd_grep():
 
     for filepath in args.files:
         try:
-            matches = TextUtils.grep(
+            output = TextUtils.grep(
                 args.pattern,
                 filepath,
                 ignore_case=args.ignore_case,
                 line_numbers=args.line_number,
                 invert=args.invert_match,
             )
-            for match in matches:
+            if output:  # Only print if there are matches
                 if len(args.files) > 1:
-                    print(f"{filepath}:{match}")
+                    for line in output.split("\n"):
+                        print(f"{filepath}:{line}")
                 else:
-                    print(match)
+                    print(output)
         except Exception as e:
             print(f"grep: {e}", file=sys.stderr)
             sys.exit(1)

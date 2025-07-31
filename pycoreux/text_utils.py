@@ -32,7 +32,7 @@ class TextUtils:
         ignore_case: bool = False,
         line_numbers: bool = False,
         invert: bool = False,
-    ) -> List[str]:
+    ) -> str:
         """
         Search for pattern in file (like grep command).
 
@@ -44,7 +44,7 @@ class TextUtils:
             invert: Return non-matching lines (default: False)
 
         Returns:
-            List of matching lines
+            String containing matching lines (one per line)
         """
         flags = re.IGNORECASE if ignore_case else 0
         compiled_pattern = re.compile(pattern, flags)
@@ -62,14 +62,12 @@ class TextUtils:
                         else:
                             results.append(line)
 
-                return results
+                return "\n".join(results)
         except FileNotFoundError:
             raise FileNotFoundError(f"File '{filepath}' not found")
 
     @staticmethod
-    def nl(
-        filepath: Union[str, Path], start: int = 1, skip_empty: bool = True
-    ) -> List[str]:
+    def nl(filepath: Union[str, Path], start: int = 1, skip_empty: bool = True) -> str:
         """
         Add line numbers to file content (like nl command).
 
@@ -79,7 +77,7 @@ class TextUtils:
             skip_empty: Skip empty lines for numbering (default: True)
 
         Returns:
-            List of numbered lines
+            String containing numbered lines
         """
         try:
             with open(filepath, "r", encoding="utf-8") as file:
@@ -95,14 +93,12 @@ class TextUtils:
                         results.append(f"\t{line_num} {line}")
                         line_num += 1
 
-                return results
+                return "\n".join(results)
         except FileNotFoundError:
             raise FileNotFoundError(f"File '{filepath}' not found")
 
     @staticmethod
-    def sort_lines(
-        lines: List[str], reverse: bool = False, numeric: bool = False
-    ) -> List[str]:
+    def sort(lines: List[str], reverse: bool = False, numeric: bool = False) -> str:
         """
         Sort lines of text (like sort command).
 
@@ -112,19 +108,23 @@ class TextUtils:
             numeric: Sort numerically (default: False)
 
         Returns:
-            Sorted list of lines
+            String containing sorted lines (one per line)
         """
         if numeric:
             try:
-                return sorted(lines, key=lambda x: float(x.strip()), reverse=reverse)
+                sorted_lines = sorted(
+                    lines, key=lambda x: float(x.strip()), reverse=reverse
+                )
+                return "\n".join(sorted_lines)
             except ValueError:
                 # Fall back to string sorting if numeric fails
                 pass
 
-        return sorted(lines, reverse=reverse)
+        sorted_lines = sorted(lines, reverse=reverse)
+        return "\n".join(sorted_lines)
 
     @staticmethod
-    def uniq(lines: List[str], count: bool = False) -> List[str]:
+    def uniq(lines: List[str], count: bool = False) -> str:
         """
         Remove duplicate consecutive lines (like uniq command).
 
@@ -133,10 +133,10 @@ class TextUtils:
             count: Include count of occurrences (default: False)
 
         Returns:
-            List with duplicates removed
+            String with duplicates removed (one line per line)
         """
         if not lines:
-            return []
+            return ""
 
         result = []
         current_line = lines[0]
@@ -159,7 +159,7 @@ class TextUtils:
         else:
             result.append(current_line)
 
-        return result
+        return "\n".join(result)
 
     @staticmethod
     def cut(line: str, delimiter: str = "\t", fields: Union[int, List[int]] = 1) -> str:
@@ -211,7 +211,7 @@ class TextUtils:
         return re.sub(pattern, replacement, text, count=count, flags=flags)
 
     @staticmethod
-    def word_count(text: str) -> dict:
+    def wc(text: str) -> dict:
         """
         Count words, lines, and characters in text.
 

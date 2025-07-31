@@ -43,7 +43,7 @@ class ArchiveUtils:
     @staticmethod
     def tar_extract(
         archive_path: Union[str, Path], extract_to: Union[str, Path] = "."
-    ) -> List[str]:
+    ) -> str:
         """
         Extract tar archive.
 
@@ -52,7 +52,7 @@ class ArchiveUtils:
             extract_to: Directory to extract to
 
         Returns:
-            List of extracted files
+            String containing extracted files (one per line)
         """
         extracted_files = []
 
@@ -60,7 +60,7 @@ class ArchiveUtils:
             tar.extractall(str(extract_to))
             extracted_files = tar.getnames()
 
-        return extracted_files
+        return "\n".join(extracted_files)
 
     @staticmethod
     def tar_list(archive_path: Union[str, Path]) -> List[dict]:
@@ -123,7 +123,7 @@ class ArchiveUtils:
     @staticmethod
     def zip_extract(
         archive_path: Union[str, Path], extract_to: Union[str, Path] = "."
-    ) -> List[str]:
+    ) -> str:
         """
         Extract zip archive.
 
@@ -132,11 +132,11 @@ class ArchiveUtils:
             extract_to: Directory to extract to
 
         Returns:
-            List of extracted files
+            String containing extracted files (one per line)
         """
         with zipfile.ZipFile(archive_path, "r") as zf:
             zf.extractall(extract_to)
-            return zf.namelist()
+            return "\n".join(zf.namelist())
 
     @staticmethod
     def zip_list(archive_path: Union[str, Path]) -> List[dict]:

@@ -106,79 +106,105 @@ class ProcessUtils:
         processes = []
 
         try:
-            # Start the first process
-            first_cmd = commands[0]
-            if not shell:
-                first_cmd = shlex.split(first_cmd)
-
-            first_proc = subprocess.Popen(
-                first_cmd,
-                shell=shell,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-            )
-            processes.append(first_proc)
-
-            # Chain the middle processes
-            for cmd in commands[1:-1]:
-                if not shell:
-                    cmd = shlex.split(cmd)
-
-                proc = subprocess.Popen(
-                    cmd,
-                    shell=shell,
-                    stdin=processes[-1].stdout,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True,
-                )
-                processes[
-                    -1
-                ].stdout.close()  # Allow previous process to receive SIGPIPE
-                processes.append(proc)
-
-            # Start the final process
-            last_cmd = commands[-1]
-            if not shell:
-                last_cmd = shlex.split(last_cmd)
-
-            last_proc = subprocess.Popen(
-                last_cmd,
-                shell=shell,
-                stdin=processes[-1].stdout,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-            )
-            processes[-1].stdout.close()
-            processes.append(last_proc)
-
-            # Wait for the final process and get output
-            stdout, stderr = last_proc.communicate()
-
-            # Wait for all processes to complete
-            for proc in processes:
-                proc.wait()
-
-            return ProcessResult(
-                stdout=stdout,
-                stderr=stderr,
-                returncode=last_proc.returncode,
-                command=" | ".join(commands),
-            )
+            processes = ProcessUtils._create_pipeline(commands, shell)
+            return ProcessUtils._execute_pipeline(processes, commands)
 
         except Exception as e:
-            # Clean up any running processes
-            for proc in processes:
-                try:
-                    proc.terminate()
-                except Exception:
-                    pass
-
+            ProcessUtils._cleanup_processes(processes)
             return ProcessResult(
                 stdout="", stderr=str(e), returncode=-1, command=" | ".join(commands)
             )
+
+    @staticmethod
+    def _create_pipeline(commands: List[str], shell: bool) -> List:
+        """Create a pipeline of processes."""
+        processes = []
+
+        # Start the first process
+        first_proc = ProcessUtils._start_first_process(commands[0], shell)
+        processes.append(first_proc)
+
+        # Chain the middle processes
+        for cmd in commands[1:-1]:
+            proc = ProcessUtils._start_middle_process(cmd, shell, processes[-1])
+            processes.append(proc)
+
+        # Start the final process
+        if len(commands) > 1:
+            last_proc = ProcessUtils._start_last_process(
+                commands[-1], shell, processes[-1]
+            )
+            processes.append(last_proc)
+
+        return processes
+
+    @staticmethod
+    def _start_first_process(cmd: str, shell: bool):
+        """Start the first process in the pipeline."""
+        if not shell:
+            cmd = shlex.split(cmd)
+        return subprocess.Popen(
+            cmd, shell=shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        )
+
+    @staticmethod
+    def _start_middle_process(cmd: str, shell: bool, prev_proc):
+        """Start a middle process in the pipeline."""
+        if not shell:
+            cmd = shlex.split(cmd)
+        proc = subprocess.Popen(
+            cmd,
+            shell=shell,
+            stdin=prev_proc.stdout,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        prev_proc.stdout.close()
+        return proc
+
+    @staticmethod
+    def _start_last_process(cmd: str, shell: bool, prev_proc):
+        """Start the last process in the pipeline."""
+        if not shell:
+            cmd = shlex.split(cmd)
+        proc = subprocess.Popen(
+            cmd,
+            shell=shell,
+            stdin=prev_proc.stdout,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        prev_proc.stdout.close()
+        return proc
+
+    @staticmethod
+    def _execute_pipeline(processes: List, commands: List[str]) -> ProcessResult:
+        """Execute the pipeline and return results."""
+        # Wait for the final process and get output
+        last_proc = processes[-1]
+        stdout, stderr = last_proc.communicate()
+
+        # Wait for all processes to complete
+        for proc in processes:
+            proc.wait()
+
+        return ProcessResult(
+            stdout=stdout,
+            stderr=stderr,
+            returncode=last_proc.returncode,
+            command=" | ".join(commands),
+        )
+
+    @staticmethod
+    def _cleanup_processes(processes: List):
+        """Clean up any running processes."""
+        for proc in processes:
+            try:
+                proc.terminate()
+            except Exception:
+                pass
 
     @staticmethod
     def capture(command: Union[str, List[str]], **kwargs) -> str:

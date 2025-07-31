@@ -7,29 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- Initial release of pycoreux
-- FileOps module with file operations (cat, head, tail, wc, ls, etc.)
-- TextUtils module with text processing utilities (grep, sort, nl, etc.)
-- ProcessUtils module for subprocess management (run, pipe, capture, etc.)
-- PathUtils module for path and filesystem operations
-- ArchiveUtils module for archive and compression operations
-- Comprehensive test suite
-- GitHub Actions workflows for CI/CD
-- Type hints throughout the codebase
-- Complete documentation and examples
+## [0.1.1] - 2025-07-31
 
 ### Changed
-- Migrated from individual scripts to professional Python package
-- Improved error handling and type safety
-- Enhanced API design following Python best practices
+
+- **BREAKING**: Refactored function return types to match Unix command behavior
+  - `FileOps.head()` and `FileOps.tail()` now return strings instead of lists
+  - `FileOps.ls()` now returns string output (one item per line) instead of list
+  - `TextUtils.grep()`, `TextUtils.nl()`, `TextUtils.sort_lines()`, `TextUtils.uniq()` now return strings
+  - `PathUtils.find()` and `PathUtils.which_all()` now return strings (one item per line)
+  - `ArchiveUtils.tar_extract()` and `ArchiveUtils.zip_extract()` now return strings
+- **BREAKING**: Renamed functions for Unix consistency:
+  - `TextUtils.sort_lines()` → `TextUtils.sort()`
+  - `TextUtils.word_count()` → `TextUtils.wc()`
+- Improved `FileOps.wc()` line counting to match Unix `wc` behavior (handles files without trailing newlines)
+- Updated CLI scripts to work with new string return types
+- Updated examples and documentation to reflect new API
 
 ### Fixed
-- N/A (initial release)
+
+- Line counting in `FileOps.wc()` now properly handles files that don't end with newlines
+- All functions now behave consistently with their Unix counterparts
 
 ## [0.1.0] - 2025-07-31
 
 ### Added
+
 - Initial release of pycoreux package
 - Core functionality for shell-like operations in Python
 - Support for Python 3.7+

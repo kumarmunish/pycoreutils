@@ -20,7 +20,8 @@ def analyze_log_file(log_path):
     print(f"File stats: {lines} lines, {words} words, {chars} characters")
 
     # Find error lines
-    error_lines = TextUtils.grep("ERROR|WARN", log_path, ignore_case=True)
+    error_output = TextUtils.grep("ERROR|WARN", log_path, ignore_case=True)
+    error_lines = error_output.split("\n") if error_output else []
     print(f"\nFound {len(error_lines)} error/warning lines:")
     for line in error_lines[:5]:  # Show first 5
         print(f"  {line}")
@@ -41,7 +42,8 @@ def analyze_log_file(log_path):
             print(f"  {ip}: {count} requests")
 
     # Find lines with specific status codes (if web logs)
-    error_codes = TextUtils.grep(r" (4\d\d|5\d\d) ", log_path)
+    error_codes_output = TextUtils.grep(r" (4\d\d|5\d\d) ", log_path)
+    error_codes = error_codes_output.split("\n") if error_codes_output else []
     print(f"\nHTTP error responses: {len(error_codes)}")
 
     return {
@@ -93,7 +95,8 @@ def main():
 
     # Demonstrate real-time log monitoring simulation
     print(f"\n=== Recent Activity (last 3 lines) ===")
-    recent_lines = FileOps.tail(log_file, 3)
+    recent_output = FileOps.tail(log_file, 3)
+    recent_lines = recent_output.split("\n")
     for line in recent_lines:
         print(f"  {line}")
 

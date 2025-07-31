@@ -4,7 +4,7 @@ File operations module providing shell-like file utilities.
 
 import os
 from pathlib import Path
-from typing import List, Tuple, Union
+from typing import Tuple, Union
 
 
 class FileOps:
@@ -34,7 +34,7 @@ class FileOps:
             raise IsADirectoryError(f"'{filepath}' is a directory, not a file")
 
     @staticmethod
-    def head(filepath: Union[str, Path], lines: int = 10) -> List[str]:
+    def head(filepath: Union[str, Path], lines: int = 10) -> str:
         """
         Return the first N lines of a file (like head command).
 
@@ -43,7 +43,7 @@ class FileOps:
             lines: Number of lines to return (default: 10)
 
         Returns:
-            List of first N lines
+            String containing the first N lines
         """
         try:
             with open(filepath, "r", encoding="utf-8") as file:
@@ -52,12 +52,12 @@ class FileOps:
                     if i >= lines:
                         break
                     result.append(line.rstrip("\n"))
-                return result
+                return "\n".join(result)
         except FileNotFoundError:
             raise FileNotFoundError(f"File '{filepath}' not found")
 
     @staticmethod
-    def tail(filepath: Union[str, Path], lines: int = 10) -> List[str]:
+    def tail(filepath: Union[str, Path], lines: int = 10) -> str:
         """
         Return the last N lines of a file (like tail command).
 
@@ -66,12 +66,13 @@ class FileOps:
             lines: Number of lines to return (default: 10)
 
         Returns:
-            List of last N lines
+            String containing the last N lines
         """
         try:
             with open(filepath, "r", encoding="utf-8") as file:
                 all_lines = file.readlines()
-                return [line.rstrip("\n") for line in all_lines[-lines:]]
+                last_lines = [line.rstrip("\n") for line in all_lines[-lines:]]
+                return "\n".join(last_lines)
         except FileNotFoundError:
             raise FileNotFoundError(f"File '{filepath}' not found")
 
@@ -80,7 +81,7 @@ class FileOps:
         path: Union[str, Path] = ".",
         show_hidden: bool = False,
         long_format: bool = False,
-    ) -> List[str]:
+    ) -> str:
         """
         List directory contents (like ls command).
 
@@ -90,7 +91,7 @@ class FileOps:
             long_format: Whether to show detailed info (default: False)
 
         Returns:
-            List of directory contents
+            String containing directory contents (one per line)
         """
         try:
             items = os.listdir(path)
@@ -105,9 +106,9 @@ class FileOps:
                     is_dir = item_path.is_dir()
                     size = stat.st_size
                     result.append(f"{'d' if is_dir else '-'} {size:>8} {item}")
-                return result
+                return "\n".join(result)
             else:
-                return sorted(items)
+                return "\n".join(sorted(items))
         except FileNotFoundError:
             raise FileNotFoundError(f"Directory '{path}' not found")
 
@@ -125,7 +126,10 @@ class FileOps:
         try:
             with open(filepath, "r", encoding="utf-8") as file:
                 content = file.read()
+                # Count lines properly like Unix wc
                 lines = content.count("\n")
+                if content and not content.endswith("\n"):
+                    lines += 1
                 words = len(content.split())
                 chars = len(content)
                 return (lines, words, chars)

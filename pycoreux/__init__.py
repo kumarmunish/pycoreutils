@@ -11,7 +11,7 @@ from .path_utils import PathUtils
 from .process_utils import ProcessUtils
 from .text_utils import TextUtils
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __author__ = "Munish Kumar"
 __email__ = "munishkumar631@gmail.com"
 

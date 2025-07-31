@@ -54,12 +54,14 @@ honeydew
     # Line numbering
     numbered = TextUtils.nl("sample.txt")
     print("   Numbered lines:")
-    for line in numbered[:3]:  # Show first 3
+    numbered_lines = numbered.split("\n")
+    for line in numbered_lines[:3]:  # Show first 3
         print(f"     {line}")
 
     # Sorting
     all_lines = FileOps.cat("sample.txt").strip().split("\n")
-    sorted_lines = TextUtils.sort_lines(all_lines)
+    sorted_output = TextUtils.sort(all_lines)
+    sorted_lines = sorted_output.split("\n")
     print(f"   Sorted fruits: {sorted_lines[:3]}...")  # Show first 3
 
     print("\n3. Process Operations:")
@@ -85,25 +87,27 @@ honeydew
     print(f"   Text replacement: '{text}' -> '{replaced}'")
 
     # Word count analysis
-    stats = TextUtils.word_count(content)
+    stats = TextUtils.wc(content)
     print(f"   Text statistics: {stats}")
 
     # Unique lines
     duplicate_lines = ["apple", "banana", "apple", "cherry", "banana"]
-    unique_lines = TextUtils.uniq(duplicate_lines)
+    unique_output = TextUtils.uniq(duplicate_lines)
+    unique_lines = unique_output.split("\n")
     print(f"   Unique items: {unique_lines}")
 
     print("\n5. Chaining Operations (Pipeline-style):")
 
     # Simulate: cat sample.txt | grep 'e' | wc -l
     lines_with_e = TextUtils.grep("e", "sample.txt")
-    count_with_e = len(lines_with_e)
+    count_with_e = len(lines_with_e.split("\n")) if lines_with_e else 0
     print(f"   Lines containing 'e': {count_with_e}")
 
     # More complex pipeline simulation
     all_fruits = FileOps.cat("sample.txt").strip().split("\n")
     filtered = [fruit for fruit in all_fruits if len(fruit) > 5]
-    sorted_filtered = TextUtils.sort_lines(filtered)
+    sorted_filtered_output = TextUtils.sort(filtered)
+    sorted_filtered = sorted_filtered_output.split("\n")
     print(f"   Fruits longer than 5 chars (sorted): {sorted_filtered}")
 
     # Clean up
