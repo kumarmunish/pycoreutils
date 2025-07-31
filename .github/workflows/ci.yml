@@ -47,13 +47,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
         exclude:
           # Exclude some combinations to speed up CI
           - os: windows-latest
-            python-version: "3.7"
+            python-version: "3.8"
           - os: macos-latest
-            python-version: "3.7"
+            python-version: "3.8"
 
     name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
 
